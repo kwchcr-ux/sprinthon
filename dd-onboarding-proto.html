@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>두런두런 온보딩 제안 프로토타입</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --page:#E7EBF1; --ink:#1B2333; --ink2:#5B6578; --ink3:#8A96A8;
+  --app:#F4F6F9; --sky:#E9F3FC; --blue:#3369F0; --blue2:#2F6BEF; --line:#D9E0EA;
+  --kakao-msg:#B2C7DA; --bubble:#FEE500;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--page);color:var(--ink);font-family:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  -webkit-font-smoothing:antialiased;word-break:keep-all;overflow:hidden}
+.stage{height:100%;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:40px;padding:24px}
+.side{max-width:340px;justify-self:end;display:flex;flex-direction:column;gap:14px}
+.side.r{justify-self:start}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--ink3);text-transform:uppercase}
+.step-t{font-size:24px;font-weight:800;line-height:1.35;letter-spacing:-.02em;text-wrap:balance}
+.step-d{font-size:15px;line-height:1.7;color:var(--ink2)}
+.step-d b{color:var(--ink)}
+.tag{align-self:flex-start;font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:#fff;color:var(--blue2);border:1px solid #C9D6EE}
+.tag.now{color:var(--ink3);border-color:var(--line)}
+.tag.mom{color:#B4590E;border-color:#F0CFA8;background:#FFF6EC}
+.dots{display:flex;flex-wrap:wrap;gap:6px;max-width:300px}
+.dots i{width:22px;height:4px;border-radius:2px;background:#C8D0DB}
+.dots i.on{background:var(--blue)}
+.dots i.past{background:#9DB5EE}
+.nav{display:flex;gap:8px}
+.nav button{font:inherit;font-size:13px;font-weight:600;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.hint{font-size:12px;color:var(--ink3)}
+
+/* phone */
+.phone{width:min(390px,calc((100vh - 48px) * 0.4606));aspect-ratio:760/1650;container-type:inline-size;position:relative;
+  border-radius:9cqw;background:#111;padding:2.4cqw;box-shadow:0 30px 60px rgba(27,35,51,.18),0 4px 12px rgba(27,35,51,.08);cursor:pointer;user-select:none}
+.screen{position:absolute;inset:2.4cqw;border-radius:7cqw;overflow:hidden;background:var(--app);display:flex;flex-direction:column;padding:0 5cqw 4.6cqw}
+.screen.k{background:var(--kakao-msg);padding:0}
+.fade{animation:fade .28s ease}
+@keyframes fade{from{opacity:.0;transform:translateX(3%)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade{animation:none}}
+
+.sb{display:flex;align-items:center;justify-content:space-between;padding-top:3.4cqw;font-size:3.6cqw;font-weight:700}
+.sb i{display:block;width:9cqw;height:1.2cqw;border-radius:9px;background:#C8D0DB;margin-right:auto;margin-left:23cqw}
+.back{width:3cqw;height:3cqw;margin:7cqw 0 0 1.5cqw;border-left:.75cqw solid var(--ink);border-bottom:.75cqw solid var(--ink);transform:rotate(45deg)}
+.title{font-size:5.9cqw;font-weight:800;line-height:1.38;letter-spacing:-.02em;margin-top:8cqw}
+.sub{font-size:4cqw;line-height:1.65;color:var(--ink2);margin-top:3.2cqw}
+.grow{flex:1 1 auto}
+.chip{background:#fff;border:1px solid #E1E6EE;border-radius:4.6cqw;padding:5.2cqw 5cqw;font-size:4.3cqw;font-weight:700;display:flex;justify-content:space-between;align-items:center;margin-top:2.6cqw}
+.chip::after{content:"";width:2cqw;height:2cqw;border-right:.6cqw solid var(--ink3);border-top:.6cqw solid var(--ink3);transform:rotate(45deg)}
+.grp{font-size:3.4cqw;font-weight:700;color:var(--ink3);margin-top:5cqw}
+.qcard{background:var(--sky);border-radius:6cqw;padding:7cqw 6.5cqw;font-size:5.6cqw;font-weight:800;line-height:1.5}
+.list{background:#fff;border-radius:6cqw;padding:3cqw 5.5cqw;margin-top:6cqw}
+.row{display:flex;align-items:center;gap:4.2cqw;padding:2.6cqw 0;font-size:4.3cqw;font-weight:600;line-height:1.45}
+.play{flex:0 0 11.5cqw;height:11.5cqw;border-radius:50%;background:var(--sky);display:grid;place-items:center}
+.play::before{content:"";border-left:3.2cqw solid var(--blue2);border-top:2cqw solid transparent;border-bottom:2cqw solid transparent;margin-left:.8cqw}
+.link{text-align:center;font-size:4cqw;font-weight:600;color:var(--blue);margin-bottom:3.6cqw}
+.link.dim{color:var(--ink3);font-weight:500;font-size:3.7cqw;margin:3cqw 0 0}
+.links{display:flex;justify-content:center;gap:9cqw;margin-bottom:3.6cqw;font-size:3.8cqw}
+.links span:first-child{color:var(--ink3)}
+.links span:last-child{color:var(--blue);text-decoration:underline;font-weight:600}
+.btn{background:var(--blue);color:#fff;border-radius:4cqw;height:14.5cqw;display:flex;align-items:center;justify-content:center;gap:2cqw;font-size:4.4cqw;font-weight:600;position:relative}
+.btn svg{width:4.6cqw;height:4.6cqw;fill:#fff}
+.btn.sm{height:11.5cqw;font-size:4cqw;border-radius:3.4cqw}
+.btn.line{background:#fff;color:var(--blue);border:1px solid #C9D6EE}
+.two{display:flex;gap:2.6cqw}.two .btn{flex:1}
+.go{box-shadow:0 0 0 0 rgba(51,105,240,.55);animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(51,105,240,.5)}70%{box-shadow:0 0 0 3.4cqw rgba(51,105,240,0)}100%{box-shadow:0 0 0 0 rgba(51,105,240,0)}}
+@media (prefers-reduced-motion:reduce){.go{animation:none;outline:.8cqw solid rgba(51,105,240,.5)}}
+.chip.go{border-color:var(--blue)}
+.card{background:#fff;border-radius:6cqw;padding:6cqw 5.5cqw;display:flex;flex-direction:column;gap:3.6cqw}
+.card.hl{border:1.5px solid #9CC0F5}
+.card-l{font-size:3.7cqw;font-weight:700;color:var(--blue2)}
+.card-t{font-size:4.6cqw;font-weight:800;line-height:1.45}
+.code{background:var(--sky);border-radius:6cqw;padding:4.6cqw 5cqw;text-align:center;margin-top:5cqw}
+.code .l,.code .n{font-size:3.4cqw;color:#6E7C93}
+.code .v{font-size:6.6cqw;font-weight:800;letter-spacing:.14em;margin:1.4cqw 0}
+.done{width:15cqw;height:15cqw;border-radius:50%;background:var(--sky);display:grid;place-items:center;margin-top:9cqw}
+.done::before{content:"";width:5cqw;height:2.6cqw;border-left:1cqw solid var(--blue2);border-bottom:1cqw solid var(--blue2);transform:rotate(-45deg) translate(.4cqw,-.6cqw)}
+.rec{width:24cqw;height:24cqw;border-radius:50%;background:#FDE8E7;display:grid;place-items:center;align-self:center}
+.rec::before{content:"";width:9cqw;height:9cqw;border-radius:50%;background:#EB453D}
+.timer{text-align:center;font-size:7cqw;font-weight:800;margin-top:4cqw;font-variant-numeric:tabular-nums}
+.state{text-align:center;font-size:3.8cqw;color:#EB453D;font-weight:700;margin-top:1.4cqw}
+.player{display:flex;align-items:center;gap:3.4cqw;background:#fff;border-radius:4.6cqw;padding:3.4cqw 4cqw;font-size:3.8cqw;font-weight:600}
+.player .bar{flex:1;height:1cqw;border-radius:2px;background:linear-gradient(90deg,var(--blue) 0 100%,#D9E0EA 0)}
+.tab{display:flex;justify-content:space-around;border-top:1px solid #E3E8EF;margin:0 -5cqw -4.6cqw;padding:3cqw 0 4cqw;font-size:3.2cqw;color:var(--ink3);background:#fff}
+.tab b{color:var(--ink)}
+.home-h{font-size:4.8cqw;font-weight:800;margin-top:7cqw}
+/* kakao */
+.k-top{background:var(--kakao-msg);padding:3.4cqw 5cqw 3cqw;display:flex;align-items:center;gap:3cqw;font-size:4.2cqw;font-weight:700}
+.k-body{flex:1;padding:4cqw 4cqw;display:flex;flex-direction:column;gap:3cqw}
+.k-row{display:flex;gap:2.4cqw;align-items:flex-start}
+.k-ava{width:10cqw;height:10cqw;border-radius:3.6cqw;background:#F6C9A9;flex:none;display:grid;place-items:center;font-size:3.6cqw;font-weight:800;color:#7A3E12}
+.k-name{font-size:3.2cqw;color:#45505E;margin-bottom:1.2cqw}
+.k-bub{background:#fff;border-radius:3.4cqw;padding:3.2cqw 3.8cqw;font-size:3.9cqw;line-height:1.55;max-width:62cqw}
+.k-link{background:#fff;border-radius:3.4cqw;overflow:hidden;width:62cqw;margin-top:1.6cqw}
+.k-link .im{height:26cqw;background:#3369F0;display:grid;place-items:center;color:#fff;font-size:6cqw;font-weight:800;letter-spacing:-.02em}
+.k-link .tx{padding:3cqw 3.6cqw;font-size:3.6cqw;font-weight:700}
+.k-link .s{font-size:3.1cqw;color:#7A8594;font-weight:500;margin-top:.8cqw}
+.k-link.go{animation:pulse 1.6s infinite}
+.k-input{background:#fff;height:11cqw;display:flex;align-items:center;padding:0 4cqw;font-size:3.6cqw;color:#9AA3AF}
+/* 어머니 큰 글씨 */
+.mom .title{font-size:6.6cqw}
+.asker{display:flex;align-items:center;gap:3cqw;margin-top:9cqw;font-size:4.4cqw;font-weight:700;color:var(--blue2)}
+.asker .av{width:10cqw;height:10cqw;border-radius:50%;background:#F6C9A9;display:grid;place-items:center;color:#7A3E12;font-size:3.8cqw;font-weight:800}
+.mom .qbig{font-size:7.2cqw;font-weight:800;line-height:1.5;margin-top:6cqw}
+.listening{align-self:center;display:flex;align-items:center;gap:2.6cqw;border:1px solid var(--line);border-radius:999px;padding:3cqw 5cqw;font-size:4cqw;font-weight:700;color:var(--ink2);background:#fff}
+.wave{display:flex;gap:.9cqw;align-items:center;height:5cqw}
+.wave i{display:block;width:.9cqw;border-radius:1px;background:var(--blue2);animation:w 1s ease-in-out infinite}
+.wave i:nth-child(2){animation-delay:.15s}.wave i:nth-child(3){animation-delay:.3s}.wave i:nth-child(4){animation-delay:.45s}
+@keyframes w{0%,100%{height:1.6cqw}50%{height:5cqw}}
+@media (prefers-reduced-motion:reduce){.wave i{animation:none;height:3cqw}}
+
+@media (max-width:900px){
+  body{overflow:auto}
+  .stage{grid-template-columns:1fr;gap:18px;height:auto;min-height:100%;padding:16px 16px 28px;justify-items:center}
+  .side,.side.r{justify-self:stretch;max-width:420px;width:100%}
+  .side.r{order:3}
+  .phone{width:min(360px,92vw);order:2}
+  .step-t{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="side">
+    <div class="eyebrow">두런두런 · 온보딩 제안</div>
+    <div class="tag" id="tag">제안</div>
+    <div class="step-t" id="t"></div>
+    <div class="step-d" id="d"></div>
+  </div>
+  <div class="phone" id="phone" role="button" tabindex="0" aria-label="다음 화면으로"><div class="screen" id="screen"></div></div>
+  <div class="side r">
+    <div class="dots" id="dots"></div>
+    <div class="nav"><button id="prev" type="button">← 이전</button><button id="next" type="button">다음 →</button><button id="reset" type="button">처음으로</button></div>
+    <div class="hint">화면을 누르거나 → 키로 넘깁니다. 파란 테가 깜빡이는 곳이 다음에 누를 곳입니다.</div>
+  </div>
+</div>
+<script>
+const KAKAO='<svg viewBox="0 0 24 24"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.84 1.87 5.33 4.69 6.75l-1.2 4.4c-.1.36.31.65.62.44l5.15-3.42c.24.02.49.03.74.03 5.52 0 10-3.58 10-8S17.52 3 12 3Z"/></svg>';
+const SB=(t='9:41')=>`<div class="sb"><span>${t}</span><i></i></div>`;
+const BACK='<div class="back"></div>';
+const Q1='어머니,<br>저를 처음 안았을 때<br>무슨 생각이 드셨어요?';
+const S=[
+{tag:'지금 그대로',kind:'now',t:'누구의 이야기인가요?',d:'O-1은 지금 그대로 둡니다. 자녀가 「어머니」를 고릅니다.',
+ h:`${SB()}${BACK}<div class="title">누구의 이야기인가요?</div><div class="sub">어떤 분의 자서전을 만들지 알려 주세요</div>
+ <div class="chip go">어머니</div><div class="chip">아버지</div><div class="chip">할머니</div><div class="chip">할아버지</div><div class="grow"></div>`},
+{tag:'제안 01 · 새 화면',t:'무엇을 해 주는지와 무료를 먼저',d:'지금은 「어머니」를 누르자마자 「이 질문을 보낼게요」와 녹음 버튼이 떠서 <b>「왜 갑자기?」</b>가 됩니다. 그 사이에 이 화면을 하나 둡니다.',
+ h:`${SB()}${BACK}<div class="title">어머니 자서전,<br>무료로 시작해 보세요</div><div class="sub">질문을 보내면 어머니께서 목소리로 답해 주세요.<br>답이 모이면 어머니의 자서전이 완성돼요.</div><div class="grow"></div><div class="btn go">첫 질문 녹음하기</div>`},
+{tag:'제안 02 · O-3',t:'설명은 제목 하나로',d:'제목이 할 일과 녹음하는 이유를 같이 말합니다. 30초는 버튼 안에. <b>「녹음 없이 보내기」</b>는 지우지 않고 작게 둡니다.',
+ h:`${SB()}${BACK}<div class="title">내 목소리로 어머니께 여쭤봐요</div><div class="grow"></div><div class="qcard">${Q1}</div><div class="grow"></div><div class="btn go">녹음하기 · 30초</div><div class="link dim">녹음 없이 보내기</div>`},
+{tag:'지금 그대로',kind:'now',t:'녹음',d:'녹음 화면은 지금 앱 그대로입니다.',
+ h:`${SB()}${BACK}<div class="title">내 목소리로 어머니께 여쭤봐요</div><div class="grow"></div><div class="rec"></div><div class="timer">0:07</div><div class="state">녹음하고 있어요</div><div class="grow"></div><div class="btn go">멈추기</div>`},
+{tag:'제안 03 · O-5와 O-6을 한 화면으로',t:'만들기와 보내기를 버튼 하나로',d:'지금은 [이야기 만들기] 다음 화면에서 「나중에 할게요」를 누르면 <b>질문은 만들어졌는데 어머니는 아무것도 받지 못합니다.</b> 누르면 바로 카톡 공유창이 뜨게 합니다.',
+ h:`${SB()}${BACK}<div class="title">어머니 자서전을 시작해요</div><div class="list"><div class="row"><span class="play"></span><span>${Q1}</span></div></div><div class="grow"></div><div class="links"><span>나중에 할게요</span><span>문자로 보내기</span></div><div class="btn go">${KAKAO}카카오톡으로 어머니께 보내기</div>`},
+{tag:'제안 05 · 어머니가 받는 카톡',kind:'mom',t:'자녀가 직접 말하는 문장으로',d:'지금은 성별을 모르면 <b>「자녀가 어머니께 질문을 보냈어요」</b>로 나갑니다. 카톡은 자녀 대화방에서 나가니 1인칭으로 쓰면 호칭이 없어도 됩니다.',
+ kakao:true,
+ h:`<div class="k-top">‹ &nbsp;우리 경원이</div><div class="k-body"><div class="grow"></div><div class="k-row"><div class="k-ava">경원</div><div><div class="k-name">우리 경원이</div><div class="k-bub">어머니, 제가 질문 하나 보냈어요. 눌러서 들어 보세요.</div><div class="k-link go"><div class="im">두런두런</div><div class="tx">어머니께 질문이 왔어요<div class="s">두런두런</div></div></div></div></div></div><div class="k-input">메시지 입력</div>`},
+{tag:'제안 05 · 어머니 화면',kind:'mom',t:'누가 보냈는지 이름으로',d:'「자녀가 보낸 질문이에요」 대신 <b>이름</b>을 넣습니다. 누가 보냈는지 알아야 어머니가 자녀에게 전화라도 하실 수 있습니다. 자녀가 녹음했으면 그 목소리로 들립니다.',
+ h:`<div class="mom" style="display:flex;flex-direction:column;flex:1">${SB('7:12')}<div class="asker"><span class="av">경원</span>경원이가 보낸 질문이에요</div><div class="qbig">어머니,<br>저를 처음 안았을 때<br>무슨 생각이 드셨어요?</div><div class="grow"></div><div class="listening"><span class="wave"><i></i><i></i><i></i><i></i></span>경원이 목소리</div><div style="height:6cqw"></div><div class="btn go" style="height:16cqw;font-size:5cqw">눌러서 바로 말하기</div></div>`},
+{tag:'제안 04 · 보낸 직후',t:'기다리는 동안 내일 질문 고르기',d:'지금은 질문 카드 고르기(O-4)가 첫 질문을 보내기 <b>전에</b> 있습니다. 여기서 고른 질문은 다음 날부터 가니, 보낸 뒤로 옮깁니다. 「보냈어요」 화면에 카드 하나를 더합니다.',
+ h:`${SB('2:05')}${BACK}<div class="title" style="margin-top:6cqw">보냈어요</div><div class="sub">어머니께서 링크를 누르면<br>첫 질문이 들려요</div><div class="code"><div class="l">초대 코드</div><div class="v">6GE5NSHP</div><div class="n">링크가 안 열리면 이 여덟 글자를 불러 드리세요</div></div><div class="grow"></div><div class="card hl"><div class="card-t">기다리는 동안, 내일 어머니께<br>여쭐 질문을 골라 볼까요?</div><div class="btn sm go">질문 고르기</div></div><div class="link dim">홈으로</div>`},
+{tag:'지금 그대로 · O-4',kind:'now',t:'질문 카드 고르기',d:'O-4 화면은 바꾸지 않고 <b>여는 때만</b> 옮깁니다.',
+ h:`${SB('2:05')}${BACK}<div class="grow"></div><div class="card" style="border:1px solid #CDD5E0;gap:2.6cqw;padding:7cqw 6cqw 6cqw"><div style="font-size:3.6cqw;font-weight:600;color:#6E7C93">어머니께 이렇게 여쭤볼까요?</div><div style="font-size:5.6cqw;font-weight:800;line-height:1.5">제가 태어난 날은<br>어떤 날이었어요?</div><span class="play" style="margin-top:3cqw;width:12.5cqw;height:12.5cqw;flex:none"></span></div><div class="grow"></div><div class="link">건너뛸게요</div><div class="btn go">궁금해요</div>`},
+{tag:'제안 04 · 다음 날 홈',t:'고르지 않았으면 한 번 확인받고',d:'자녀가 질문을 고르지 않고 나가면 앱이 다음 질문을 정해 두고, 다음 날 홈에서 <b>자녀가 한 번 눌러야</b> 갑니다. 자녀가 모르는 질문이 「물어봤어요」로 나가지 않게 합니다.',
+ h:`${SB('9:02')}<div class="home-h">어머니의 자서전</div><div class="card" style="margin-top:5cqw"><div class="card-l">오늘 어머니께 보낼 질문</div><div class="card-t">제가 이름은 누가<br>어떻게 지었어요?</div><div class="two"><div class="btn sm line">다른 질문</div><div class="btn sm go">이 질문 보내기</div></div></div><div class="grow"></div><div class="tab"><b>홈</b><span>자서전</span><span>내 정보</span></div>`},
+];
+S[9].h=S[9].h.replace('제가 이름은 누가<br>어떻게 지었어요?','제 이름은 누가<br>어떻게 지었어요?');
+let i=0;
+const $=id=>document.getElementById(id);
+const dots=$('dots'); S.forEach(()=>dots.appendChild(document.createElement('i')));
+function show(n){
+  i=Math.max(0,Math.min(S.length-1,n));
+  const s=S[i], sc=$('screen');
+  sc.className='screen fade'+(s.kakao?' k':''); sc.innerHTML=s.h;
+  void sc.offsetWidth;
+  const tag=$('tag'); tag.textContent=s.tag; tag.className='tag'+(s.kind==='now'?' now':s.kind==='mom'?' mom':'');
+  $('t').textContent=s.t; $('d').innerHTML=s.d;
+  [...dots.children].forEach((d,k)=>d.className=k===i?'on':k<i?'past':'');
+  $('prev').disabled=i===0; $('next').textContent=i===S.length-1?'끝':'다음 →';
+  try{history.replaceState(null,'','#'+(i+1))}catch(e){}
+}
+$('phone').addEventListener('click',()=>show(i===S.length-1?0:i+1));
+$('phone').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(i+1)}});
+$('next').onclick=()=>show(i+1); $('prev').onclick=()=>show(i-1); $('reset').onclick=()=>show(0);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(i+1); if(e.key==='ArrowLeft')show(i-1)});
+const h=parseInt((location.hash||'').slice(1),10); show(isNaN(h)?0:h-1);
+</script>
+</body>
+</html>
