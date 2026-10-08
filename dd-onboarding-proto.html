@@ -116,12 +116,21 @@ body{background:var(--page);color:var(--ink);font-family:"Pretendard",-apple-sys
 @media (prefers-reduced-motion:reduce){.wave i{animation:none;height:3cqw}}
 
 @media (max-width:900px){
-  body{overflow:auto}
-  .stage{grid-template-columns:1fr;gap:18px;height:auto;min-height:100%;padding:16px 16px 28px;justify-items:center}
-  .side,.side.r{justify-self:stretch;max-width:420px;width:100%}
-  .side.r{order:3}
-  .phone{width:min(360px,92vw);order:2}
-  .step-t{font-size:20px}
+  html,body{height:100%;overflow:hidden}
+  .stage{display:flex;flex-direction:column;gap:10px;height:100dvh;padding:calc(10px + env(safe-area-inset-top,0px)) 16px calc(10px + env(safe-area-inset-bottom,0px));align-items:stretch}
+  .side{max-width:none;width:100%;gap:6px;justify-self:auto;flex:none}
+  .side .eyebrow{display:none}
+  .tag{font-size:11px;padding:3px 8px}
+  .step-t{font-size:17px;line-height:1.3}
+  .step-d{font-size:13px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+  .step-d.open{-webkit-line-clamp:unset;display:block}
+  .phone-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+  .side.r{order:3;flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .side.r .hint{display:none}
+  .dots{max-width:none;flex:1;gap:4px}
+  .dots i{flex:1;width:auto;max-width:22px}
+  .nav button{padding:8px 11px;font-size:12px}
+  #reset{display:none}
 }
 </style>
 </head>
@@ -133,7 +142,7 @@ body{background:var(--page);color:var(--ink);font-family:"Pretendard",-apple-sys
     <div class="step-t" id="t"></div>
     <div class="step-d" id="d"></div>
   </div>
-  <div class="phone" id="phone" role="button" tabindex="0" aria-label="다음 화면으로"><div class="screen" id="screen"></div></div>
+  <div class="phone-wrap" id="pwrap"><div class="phone" id="phone" role="button" tabindex="0" aria-label="다음 화면으로"><div class="screen" id="screen"></div></div></div>
   <div class="side r">
     <div class="dots" id="dots"></div>
     <div class="nav"><button id="prev" type="button">← 이전</button><button id="next" type="button">다음 →</button><button id="reset" type="button">처음으로</button></div>
@@ -170,6 +179,8 @@ const S=[
  h:`${SB('9:02')}<div class="home-h">어머니의 자서전</div><div class="card" style="margin-top:5cqw"><div class="card-l">오늘 어머니께 보낼 질문</div><div class="card-t">제가 이름은 누가<br>어떻게 지었어요?</div><div class="two"><div class="btn sm line">다른 질문</div><div class="btn sm go">이 질문 보내기</div></div></div><div class="grow"></div><div class="tab"><b>홈</b><span>자서전</span><span>내 정보</span></div>`},
 ];
 S[9].h=S[9].h.replace('제가 이름은 누가<br>어떻게 지었어요?','제 이름은 누가<br>어떻게 지었어요?');
+{const ORDER=[0,1,2,3,4,7,8,5,6,9];const T=ORDER.map(k=>S[k]);S.length=0;S.push(...T);}
+S[9].tag='제안 04 · 다음 날 자녀 홈';
 let i=0;
 const $=id=>document.getElementById(id);
 const dots=$('dots'); S.forEach(()=>dots.appendChild(document.createElement('i')));
@@ -179,7 +190,7 @@ function show(n){
   sc.className='screen fade'+(s.kakao?' k':''); sc.innerHTML=s.h;
   void sc.offsetWidth;
   const tag=$('tag'); tag.textContent=s.tag; tag.className='tag'+(s.kind==='now'?' now':s.kind==='mom'?' mom':'');
-  $('t').textContent=s.t; $('d').innerHTML=s.d;
+  $('t').textContent=s.t; $('d').innerHTML=s.d; $('d').classList.remove('open'); if(typeof fit==='function')fit();
   [...dots.children].forEach((d,k)=>d.className=k===i?'on':k<i?'past':'');
   $('prev').disabled=i===0; $('next').textContent=i===S.length-1?'끝':'다음 →';
   try{history.replaceState(null,'','#'+(i+1))}catch(e){}
@@ -188,7 +199,18 @@ $('phone').addEventListener('click',()=>show(i===S.length-1?0:i+1));
 $('phone').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();show(i+1)}});
 $('next').onclick=()=>show(i+1); $('prev').onclick=()=>show(i-1); $('reset').onclick=()=>show(0);
 document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(i+1); if(e.key==='ArrowLeft')show(i-1)});
+
+function fit(){
+  const ph=$('phone'), w=$('pwrap');
+  if(window.innerWidth<=900){
+    const H=w.clientHeight, W=w.clientWidth;
+    ph.style.width=Math.floor(Math.min(W, H*760/1650))+'px';
+  } else ph.style.width='';
+}
+window.addEventListener('resize',fit); window.addEventListener('orientationchange',fit);
+$('d').addEventListener('click',()=>$('d').classList.toggle('open'));
 const h=parseInt((location.hash||'').slice(1),10); show(isNaN(h)?0:h-1);
+fit(); requestAnimationFrame(fit);
 </script>
 </body>
 </html>
